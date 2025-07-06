@@ -85,7 +85,6 @@ const MealPlannerApp = () => {
               })}
             </nav>
           </div>
-
           {/* Main Content */}
           <div className="flex-1">
             {renderContent()}

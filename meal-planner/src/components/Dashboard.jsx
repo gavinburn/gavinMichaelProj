@@ -14,10 +14,10 @@ const Dashboard = () => {
       <div className="bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 rounded-3xl p-8 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
-        <div className="relative z-10">
+        <div className="relative z-10 text-center">
           <h1 className="text-4xl font-bold mb-2">Welcome back, Sarah!</h1>
-          <p className="text-xl text-white/90">Ready to plan some delicious meals?</p>
-          <div className="mt-6 flex items-center gap-4">
+          <p className="text-xl text-white/90 mb-6">Ready to plan some delicious meals?</p>
+          <div className="flex items-center justify-center gap-4">
             <div className="bg-white/20 rounded-full px-4 py-2 flex items-center gap-2">
               <Zap className="w-4 h-4" />
               <span className="text-sm font-medium">7 day streak</span>
