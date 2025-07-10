@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { Calendar, Package, Heart, Zap, Clock, Star } from 'lucide-react';
+import { apiService } from '../api_client';
 
 const Dashboard = () => {
   const mealPlans = [
@@ -12,12 +13,10 @@ const Dashboard = () => {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('http://localhost:5000/api')
-        if (!res.ok) throw new Error(res.statusText)
-        const data = await res.json()
+        const data = await apiService.getUser()
         setBackendData(data)
       } catch (err) {
-        console.error('Fetch /api failed:', err)
+        console.error('Fetch users failed:', err)
       }
     }
     load()

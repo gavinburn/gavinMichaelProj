@@ -5,6 +5,7 @@ import Profile from './Profile';
 import Ingredients from './Ingredients';
 import Plans from './Plans';
 import Favorites from './Favorites';
+import CreateAccount from './CreateAccount';
 
 const MealPlannerApp = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -15,6 +16,7 @@ const MealPlannerApp = () => {
     { id: 'ingredients', label: 'Ingredients', icon: Package },
     { id: 'plans', label: 'Meal Plans', icon: Calendar },
     { id: 'favorites', label: 'Favourites', icon: Heart },
+    { id: 'create account', label: 'Create Account', icon: Heart },
   ];
 
   const renderContent = () => {
@@ -29,6 +31,8 @@ const MealPlannerApp = () => {
         return <Plans />;
       case 'favorites':
         return <Favorites />;
+      case 'create account':
+        return <CreateAccount />;
       default:
         return <Dashboard />;
     }
