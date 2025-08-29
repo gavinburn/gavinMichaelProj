@@ -10,6 +10,13 @@ import { apiService } from '../api_client'; // ← use existing API client
 function getUserId() {
   try { return JSON.parse(localStorage.getItem('userId') || 'null'); } catch { return null; }
 }
+function getUserEmail() {
+  try {
+    const raw = localStorage.getItem('email') || '';
+    const unwrapped = raw.startsWith('"') ? JSON.parse(raw) : raw;
+    return unwrapped.replace(/^['"]+|['"]+$/g, '').trim();
+  } catch { return ''; }
+}
 
 const MealPlannerApp = ({ userEmail, onSignOut }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -36,6 +43,10 @@ const MealPlannerApp = ({ userEmail, onSignOut }) => {
       default:            return <Dashboard />;
     }
   };
+
+  const email = getUserEmail();
+  const username = (email.split('@')[0] || '').replace(/^['"]+|['"]+$/g, '').trim();
+
   async function handleDeleteAccount() {
     setError('');
     const userId = getUserId();
@@ -74,6 +85,10 @@ const MealPlannerApp = ({ userEmail, onSignOut }) => {
             </div>
 
             <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-600 hidden sm:block">
+                Welcome, {username || userEmail.split('@')[0]}
+              </span>
+              {/* Bell removed */}
               <button
                 onClick={() => setSettingsOpen(true)}
                 className="p-2 bg-white text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors duration-200 border border-gray-200"

@@ -103,6 +103,7 @@ const AccountCreationPage = ({ onBack }) => {
         });
         
     } catch (error) {
+      console.log('Account creation request:', formData);
       console.error('Error:', error);
       alert('Account creation failed. Please try again.');
     } finally {

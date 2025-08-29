@@ -18,7 +18,7 @@ export default function Favorites() {
     (async () => {
       if (!userId) { setLoading(false); return; }
       try {
-        const favs = await apiService.listFavoritePlans(userId);
+        const favs = await apiService.getUserFavorites(userId);
         if (!ignore) setItems(Array.isArray(favs) ? favs : []);
       } catch (e) {
         console.error('Fetch favorites failed:', e);

@@ -35,17 +35,6 @@ export default function Ingredients() {
   const [confirmName, setConfirmName] = useState('');
   const [deletingId, setDeletingId] = useState(null);
 
-
-  // receipt scan
-  const [showScan, setShowScan] = useState(false);
-  const [scanFile, setScanFile] = useState(null);
-  const [parsing, setParsing] = useState(false);
-  const [parsedItems, setParsedItems] = useState([]); // [{name, quantity, unit, checked}]
-  const [importing, setImporting] = useState(false);
-  const [scanInfo, setScanInfo] = useState(''); // <-- NEW
-
-
-
   useEffect(() => {
     let ignore = false;
     (async () => {
@@ -140,7 +129,7 @@ export default function Ingredients() {
 
     try {
       setSavingId(id);
-      const updated = await apiService.updateIngredient(id, { quantity: q, unit: editUnit });
+      const updated = await apiService.updateIngredient(userId, id, { quantity: q, unit: editUnit });
       setItems(prev => prev.map(it => it.id === id ? updated : it));
       cancelEdit();
     } catch (err) {
@@ -192,13 +181,6 @@ export default function Ingredients() {
                 className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
-            <button
-              onClick={() => setShowScan(true)}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Scan Receipt
-            </button>
             <button
               onClick={() => setShowAdd(true)}
               className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2.5 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center gap-2"
@@ -437,146 +419,6 @@ export default function Ingredients() {
           </div>
         </div>
       )}
-
-      {showScan && (
-        <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/30" onClick={() => { setShowScan(false); setScanFile(null); setParsedItems([]); }} />
-          <div className="absolute inset-x-0 top-10 mx-auto max-w-2xl">
-            <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Scan receipt</h3>
-                <button onClick={() => setShowScan(false)} className="p-2 rounded-lg hover:bg-gray-100">
-                  <X className="w-5 h-5 text-gray-600" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setScanFile(e.target.files?.[0] || null)}
-                  className="block w-full text-sm text-gray-700
-                    file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0
-                    file:text-sm file:font-medium
-                    file:bg-purple-50 file:text-purple-700
-                    hover:file:bg-purple-100"
-                />
-
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={async () => {
-                      if (!scanFile) return;
-                      try {
-                        setParsing(true);
-                        const r = await apiService.parseReceipt(scanFile);
-                        const base = Array.isArray(r?.items) ? r.items : [];
-
-                        if (base.length === 0) {
-                          setParsedItems([]);
-                          setScanInfo(
-                            r?.notice === 'NO_ITEMS'
-                              ? 'No items were recognized in this image. Try a clearer photo, flatter receipt, or better lighting.'
-                              : 'We couldn’t find any valid items. Please try another photo.'
-                          );
-                        } else {
-                          setParsedItems(base.map(it => ({ ...it, checked: true })));
-                          setScanInfo('');
-                        }
-
-                      } catch (e) {
-                        console.error(e);
-                        alert('Failed to parse receipt. Please try another image.');
-                      } finally {
-                        setParsing(false);
-                      }
-                    }}
-                    disabled={!scanFile || parsing}
-                    className={`px-5 py-2.5 rounded-xl text-white font-medium bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg transition-all ${(!scanFile || parsing) ? 'opacity-70 cursor-not-allowed' : ''}`}
-                  >
-                    {parsing ? 'Parsing…' : 'Parse'}
-                  </button>
-
-                  {parsedItems.length > 0 && (
-                    <button
-                      onClick={async () => {
-                        if (!userId) return;
-                        const toImport = parsedItems.filter(i => i.checked)
-                          .map(({ name, quantity, unit }) => ({ name, quantity: Number(quantity), unit }));
-                        if (toImport.length === 0) { alert('Nothing selected.'); return; }
-                        try {
-                          setImporting(true);
-                          const created = await apiService.bulkCreateIngredients(userId, toImport);
-                          setItems(prev => [...created, ...prev]);
-                          setShowScan(false);
-                          setScanFile(null);
-                          setParsedItems([]);
-                        } catch (e) {
-                          console.error(e);
-                          alert('Import failed.');
-                        } finally {
-                          setImporting(false);
-                        }
-                      }}
-                      disabled={importing}
-                      className={`px-5 py-2.5 rounded-xl text-white font-medium bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg transition-all ${importing ? 'opacity-70 cursor-not-allowed' : ''}`}
-                    >
-                      {importing ? 'Importing…' : `Import ${parsedItems.filter(i => i.checked).length} item(s)`}
-                    </button>
-                  )}
-                </div>
-
-                {parsedItems.length > 0 && (
-                  <div className="mt-4 border border-gray-200 rounded-xl divide-y max-h-80 overflow-auto">
-                    {parsedItems.map((it, idx) => (
-                      <div key={idx} className="p-3 bg-gray-50/60">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={!!it.checked}
-                            onChange={(e) => setParsedItems(arr => arr.map((x, i) => i === idx ? { ...x, checked: e.target.checked } : x))}
-                          />
-                          <input
-                            value={it.name}
-                            onChange={(e) => setParsedItems(arr => arr.map((x, i) => i === idx ? { ...x, name: e.target.value } : x))}
-                            className="flex-1 px-3 py-2 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-purple-500"
-                          />
-                          <input
-                            type="number"
-                            min="0"
-                            step="any"
-                            value={it.quantity}
-                            onChange={(e) => setParsedItems(arr => arr.map((x, i) => i === idx ? { ...x, quantity: e.target.value } : x))}
-                            className="w-28 px-3 py-2 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-emerald-500"
-                          />
-                          <select
-                            value={it.unit}
-                            onChange={(e) => setParsedItems(arr => arr.map((x, i) => i === idx ? { ...x, unit: e.target.value } : x))}
-                            className="px-3 py-2 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-emerald-500"
-                          >
-                            {['g', 'kg', 'mL', 'L'].map(u => <option key={u} value={u}>{u}</option>)}
-                          </select>
-                        </div>
-                        {it.rawLine && <p className="mt-1 text-xs text-gray-500">from: “{it.rawLine}”</p>}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-
-                {scanInfo && (
-                  <div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50/70 px-3 py-2 text-amber-800">
-                    <AlertCircle className="h-5 w-5 shrink-0" />
-                    <div className="text-sm">{scanInfo}</div>
-                  </div>
-                )}
-
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-
     </div>
   );
 }

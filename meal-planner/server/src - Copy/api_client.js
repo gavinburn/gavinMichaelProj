@@ -15,34 +15,27 @@ class ApiService {
     try {
       const response = await fetch(url, config);
       if (!response.ok) {
-        // Attempt to parse error
-        let errText = `HTTP error! status: ${response.status}`;
-        try {
-          const body = await response.json();
-          if (body?.error) errText = body.error;
-          if (body?.message) errText = body.message;
-        } catch { /* empty */ }
-        throw new Error(errText);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      // No content
+
+      // Handle 204 No Content or empty body safely
       if (response.status === 204) return null;
-      return response.json();
+      const text = await response.text();
+      if (!text) return null;
+
+      return JSON.parse(text);
     } catch (error) {
-      console.error(`API request to ${url} failed:`, error);
+      console.error('API request failed:', error);
       throw error;
     }
   }
 
-  // --- users ---
-  async createUser(payload) {
+  // User-related endpoints
+  async createUser(userData) {
     return this.request('/user', {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: JSON.stringify(userData),
     });
-  }
-
-  async getUsers() {
-    return this.request('');
   }
 
   async getUser() {
@@ -76,9 +69,21 @@ class ApiService {
     });
   }
 
-  // --- ingredients ---
+  // Fitness-related endpoints
+  async getUserWorkouts(userId) {
+    return this.request(`/user/${userId}/workouts`);
+  }
+
+  async createWorkout(workoutData) {
+    return this.request('/workouts', {
+      method: 'POST',
+      body: JSON.stringify(workoutData),
+    });
+  }
+
+  // --- add near other user-scoped helpers ---
   async getUserIngredients(userId) {
-    return this.request(`/user/${userId}/ingredients`, { method: 'GET' });
+    return this.request(`/user/${userId}/ingredients`);
   }
 
   async createIngredient(userId, ingredient) {
@@ -88,8 +93,7 @@ class ApiService {
     });
   }
 
-  // partial update (qty/unit)
-  async updateIngredient(ingredientId, partial) {
+  async updateIngredient(_userId, ingredientId, partial) {
     // server route is non-scoped: /api/ingredients/:id
     return this.request(`/ingredients/${ingredientId}`, {
       method: 'PATCH',
@@ -104,7 +108,7 @@ class ApiService {
     });
   }
 
-  // --- meal plan generation / accept ---
+  // --- api_client.js additions ---
   async generateMealPlan(payload) {
     return this.request('/meal-plans/generate', {
       method: 'POST',
@@ -119,21 +123,35 @@ class ApiService {
     });
   }
 
-  // add this new method
+
+  // --- meal plans ---
   async getUserMealPlans(userId, status) {
     const q = status ? `?status=${encodeURIComponent(status)}` : '';
-    return this.request(`/user/${userId}/meal-plans${q}`, { method: 'GET' });
+    return this.request(`/user/${userId}/meal-plans${q}`);
   }
 
-  // fix this existing method to hit the correct endpoint
-  async listFavoritePlans(userId) {
-    return this.request(`/user/${userId}/favorites`, { method: 'GET' });
+
+  async updateMealPlan(planId, partial) {
+    // partial: { status?, name? 
+    return this.request(`/meal-plans/${planId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(partial),
+    });
+  }
+
+  async deleteMealPlan(planId) {
+    return this.request(`/meal-plans/${planId}`, { method: 'DELETE' });
+  }
+
+  // --- favourites ---
+  async getUserFavorites(userId) {
+    return this.request(`/user/${userId}/favorites`);
   }
 
   async favoriteMealPlan(userId, planId) {
     return this.request(`/meal-plans/${planId}/favorite`, {
       method: 'POST',
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ userId })
     });
   }
 
@@ -144,25 +162,7 @@ class ApiService {
     });
   }
 
-  // --- receipts ---
-  async parseReceipt(file) {
-    const fd = new FormData();
-    fd.append('file', file);
-    const resp = await fetch(`${API_BASE_URL}/receipts/parse`, {
-      method: 'POST',
-      body: fd
-    });
-    if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
-    return resp.json();
-  }
 
-  // bulk create ingredients
-  async bulkCreateIngredients(userId, items) {
-    return this.request(`/user/${userId}/ingredients/bulk`, {
-      method: 'POST',
-      body: JSON.stringify({ items }),
-    });
-  }
 }
 
 // Export a single instance

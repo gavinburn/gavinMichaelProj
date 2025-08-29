@@ -134,14 +134,51 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.IngredientScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  quantity: 'quantity',
+  unit: 'unit',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MealPlanScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  status: 'status',
+  planJson: 'planJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.FavoriteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.FitnessGoal = exports.$Enums.FitnessGoal = {
   BULKING: 'BULKING',
@@ -151,9 +188,7 @@ exports.FitnessGoal = exports.$Enums.FitnessGoal = {
 
 exports.Gender = exports.$Enums.Gender = {
   MALE: 'MALE',
-  FEMALE: 'FEMALE',
-  NON_BINARY: 'NON_BINARY',
-  OTHER: 'OTHER'
+  FEMALE: 'FEMALE'
 };
 
 exports.FitnessLevel = exports.$Enums.FitnessLevel = {
@@ -164,8 +199,16 @@ exports.FitnessLevel = exports.$Enums.FitnessLevel = {
   VERY_ACTIVE: 'VERY_ACTIVE'
 };
 
+exports.PlanStatus = exports.$Enums.PlanStatus = {
+  ACTIVE: 'ACTIVE',
+  DONE: 'DONE'
+};
+
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Ingredient: 'Ingredient',
+  MealPlan: 'MealPlan',
+  Favorite: 'Favorite'
 };
 
 /**

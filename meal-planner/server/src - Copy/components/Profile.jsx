@@ -25,6 +25,22 @@ const cuisineOptions = [
   'French', 'Thai', 'Japanese', 'Greek', 'Middle Eastern', 'Chinese'
 ];
 
+const normalizeGoal = (g) => {
+  const v = (g || '').toUpperCase();
+  if (v === 'WEIGHT_LOSS') return FitnessGoal.CUTTING;
+  if (v === 'MUSCLE_GAIN') return FitnessGoal.BULKING;
+  if (v === 'MAINTENANCE') return FitnessGoal.MAINTAINING;
+  return g || '';
+};
+
+const normalizeLevel = (lvl) => {
+  const v = (lvl || '').toUpperCase();
+  if (v === 'BEGINNER') return FitnessLevel.LIGHT;
+  if (v === 'INTERMEDIATE') return FitnessLevel.MODERATE;
+  if (v === 'ADVANCED') return FitnessLevel.ACTIVE;
+  return lvl || '';
+};
+
 const Profile = ({ userEmail: emailProp }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,7 +85,7 @@ const Profile = ({ userEmail: emailProp }) => {
             setUser(null);
           } else {
             setUser(found);
-            // fill form with existing values
+            // Seed form with existing values
             setForm({
               weight: found.weight ?? '',
               fitnessGoal: found.fitnessGoal ?? '',
@@ -208,7 +224,7 @@ const Profile = ({ userEmail: emailProp }) => {
             </h1>
             <p className="text-gray-600 mb-4">{email}</p>
 
-            {/* Edit/Cancel/Save Buttons*/}
+            {/* Enhanced Edit / Cancel / Save Buttons */}
             <div className="flex items-center gap-3 justify-center sm:justify-start">
               {!editing ? (
                 <button
