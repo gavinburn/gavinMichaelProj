@@ -41,14 +41,6 @@ class ApiService {
     });
   }
 
-  async getUsers() {
-    return this.request('');
-  }
-
-  async getUser() {
-    return this.request(``);
-  }
-
   async updateUser(userId, userData) {
     return this.request(`/user/${userId}`, {
       method: 'PUT',
