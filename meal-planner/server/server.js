@@ -28,16 +28,6 @@ const visionClient = new vision.ImageAnnotatorClient();
 const EXCLUDE_LINE = /\b(subtotal|total|hst|gst|tax|visa|mastercard|debit|change|balance|card|auth|cash|tender|receipt|thank|store|invoice)\b/i;
 const QTY_UNIT = /(\d+(?:[.,]\d+)?)\s*(kg|g|l|ml)\b/i;
 
-function normalizeName(s) {
-  return s
-    .toLowerCase()
-    .replace(/[@#*]+/g,' ')
-    .replace(/\s{2,}/g,' ')
-    .trim()
-    .replace(/\b(chicken breasts?)\b/g, 'chicken breast') // a couple of examples
-    .replace(/\b(tomatoes?)\b/g, 'tomato');
-}
-
 // === AI receipt extraction helper ===
 async function aiExtractItemsFromReceipt(text) {
   if (!text || typeof text !== 'string' || !text.trim()) return { items: [] };
@@ -913,4 +903,5 @@ function normalizeQtyUnit(qty, unit) {
   return { quantity: Math.round(quantity * 100) / 100, unit: newUnit };
 }
 
-app.listen(5000, () => { console.log("Server started on port 5000") })
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => { console.log(`Server started on port ${PORT}`) });
