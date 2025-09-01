@@ -1,15 +1,12 @@
 import bcrypt from "bcrypt";
-import path from 'path';
-import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Force load the .env file that sits next to server.js
-// and override any OPENAI_API_KEY already set in the shell.
-dotenv.config({ path: path.join(__dirname, '.env'), override: true });
+if (process.env.NODE_ENV !== 'production') {
+  // load .env only when running locally
+  dotenv.config();
+}
 import express from 'express'
 import cors from 'cors'
-import { PrismaClient } from "./src/generated/prisma/index.js"
+import { PrismaClient } from "@prisma/client"
 import { FitnessGoal, Gender, FitnessLevel, validateEnumValue } from '../common/constants.js'
 const prisma = new PrismaClient()
 const app = express()

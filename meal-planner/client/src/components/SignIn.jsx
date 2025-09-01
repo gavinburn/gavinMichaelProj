@@ -146,7 +146,7 @@ const SignInPage = () => {
             <div className="relative z-10">
               <div className="flex items-center justify-center gap-2 mb-3">
                 <ChefHat className="w-8 h-8" />
-                <h1 className="text-3xl font-bold">MealCraft</h1>
+                <h1 className="text-3xl font-bold">MealWizard</h1>
               </div>
               <p className="text-white/90">Sign in to continue your fitness journey</p>
               <div className="flex items-center justify-center gap-3 mt-4">

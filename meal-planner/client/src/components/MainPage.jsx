@@ -69,7 +69,7 @@ const MealPlannerApp = ({ userEmail, onSignOut }) => {
                 <ChefHat className="w-6 h-6 text-white" />
               </div>
               <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-                MealCraft
+                MealWizard
               </h1>
             </div>
 
