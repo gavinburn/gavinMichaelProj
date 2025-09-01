@@ -23,10 +23,11 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB
 });
 const visionClient = new vision.ImageAnnotatorClient();
+const allowed = [
+  'http://localhost:5173',
+  'https://your-app.vercel.app',
+];
 
-
-const EXCLUDE_LINE = /\b(subtotal|total|hst|gst|tax|visa|mastercard|debit|change|balance|card|auth|cash|tender|receipt|thank|store|invoice)\b/i;
-const QTY_UNIT = /(\d+(?:[.,]\d+)?)\s*(kg|g|l|ml)\b/i;
 
 // === AI receipt extraction helper ===
 async function aiExtractItemsFromReceipt(text) {
@@ -112,7 +113,7 @@ async function aiExtractItemsFromReceipt(text) {
 
 app.use(express.json());
 // allow requests from your front-end origin
-app.use(cors({ origin: 'http://localhost:5173' }))
+app.use(cors({ origin: allowed, credentials: true }));
 
 app.get("/api", async (req, res) => {
   try {
@@ -902,6 +903,5 @@ function normalizeQtyUnit(qty, unit) {
   const { quantity, unit: newUnit } = fromBaseAndNormalize(baseQty, groupName);
   return { quantity: Math.round(quantity * 100) / 100, unit: newUnit };
 }
-
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => { console.log(`Server started on port ${PORT}`) });
