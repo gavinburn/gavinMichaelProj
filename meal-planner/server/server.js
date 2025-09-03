@@ -25,6 +25,7 @@ const upload = multer({
 const visionClient = new vision.ImageAnnotatorClient();
 const allowed = [
   'http://localhost:5173',
+  'https://www.mealwizard.ca/',
   'https://gavin-michael-proj.vercel.app',
   /\.vercel\.app$/   // regex is supported by the cors package
 ];
